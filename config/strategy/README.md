@@ -106,6 +106,17 @@ The strategy combines RSI with:
 - Profit targets
 - Portfolio concentration limits
 
+### RSI Implementation Note
+
+⚠️ **Important**: The current implementation uses a **simplified RSI approximation** based on daily price movement rather than true RSI calculation. This is intentional for demonstration purposes and to avoid dependency on historical data API calls.
+
+For production use, you should:
+1. Fetch historical price data (requires instrument token mapping)
+2. Use the `calculateRSI()` function with 14-period historical prices
+3. Or integrate with a charting library that provides technical indicators
+
+The simplified version provides reasonable signals for testing but may not match standard RSI values from trading platforms.
+
 ## 🎯 Trading Workflow
 
 1. **Morning (9:30 AM)**:

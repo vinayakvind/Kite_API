@@ -92,8 +92,8 @@ async function trackDailyProfit() {
     }
 
     // Total today's P&L
-    const totalTodayPnL = todayPnL + intradayPnL;
-    const totalOverallPnL = totalValue - totalInvested;
+    const totalTodayPnl = todayPnL + intradayPnL;
+    const totalOverallPnl = totalValue - totalInvested;
     const todayDate = new Date().toISOString().split('T')[0];
 
     // Load tracking data
@@ -107,11 +107,11 @@ async function trackDailyProfit() {
     const todayRecord = {
       date: todayDate,
       portfolioValue: Number(totalValue.toFixed(2)),
-      todayPnL: Number(totalTodayPnL.toFixed(2)),
-      overallPnL: Number(totalOverallPnL.toFixed(2)),
+      todayPnl: Number(totalTodayPnl.toFixed(2)),
+      overallPnl: Number(totalOverallPnl.toFixed(2)),
       holdings: holdings.length,
-      intradayPnL: Number(intradayPnL.toFixed(2)),
-      deliveryPnL: Number(todayPnL.toFixed(2))
+      intradayPnl: Number(intradayPnL.toFixed(2)),
+      deliveryPnl: Number(todayPnL.toFixed(2))
     };
 
     if (existingRecordIndex >= 0) {
@@ -123,9 +123,9 @@ async function trackDailyProfit() {
       profitData.dailyRecords.push(todayRecord);
       
       // Update win/loss counters
-      if (totalTodayPnL > 0) {
+      if (totalTodayPnl > 0) {
         profitData.winningDays++;
-      } else if (totalTodayPnL < 0) {
+      } else if (totalTodayPnl < 0) {
         profitData.losingDays++;
       }
       
@@ -134,7 +134,7 @@ async function trackDailyProfit() {
 
     // Update total profit
     profitData.totalProfit = profitData.dailyRecords.reduce(
-      (sum, r) => sum + r.todayPnL, 
+      (sum, r) => sum + r.todayPnl, 
       0
     );
 
@@ -170,8 +170,8 @@ async function trackDailyProfit() {
       log('\n📅 Last 5 Days:');
       const lastFive = profitData.dailyRecords.slice(-5).reverse();
       for (const record of lastFive) {
-        const indicator = record.todayPnL >= 0 ? '🟢' : '🔴';
-        log(`${indicator} ${record.date}: ${record.todayPnL >= 0 ? '+' : ''}₹${record.todayPnL.toFixed(2)}`);
+        const indicator = record.todayPnl >= 0 ? '🟢' : '🔴';
+        log(`${indicator} ${record.date}: ${record.todayPnl >= 0 ? '+' : ''}₹${record.todayPnl.toFixed(2)}`);
       }
     }
 

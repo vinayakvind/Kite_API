@@ -381,13 +381,37 @@
     <script>
         async function loadData() {
             try {
-                // Load strategy signals
-                const signalsResponse = await fetch('../strategy_signals.json');
-                const signalsData = await signalsResponse.json();
+                // Load strategy signals - try multiple paths
+                let signalsData = null;
+                try {
+                    const signalsResponse = await fetch('../strategy_signals.json');
+                    if (!signalsResponse.ok) throw new Error('Strategy signals not found');
+                    signalsData = await signalsResponse.json();
+                } catch (e) {
+                    console.warn('Could not load strategy_signals.json:', e.message);
+                    // Provide default/empty data structure
+                    signalsData = {
+                        signals: [],
+                        summary: { totalSignals: 0, buySignals: 0, sellSignals: 0 },
+                        portfolioValue: 0,
+                        availableCash: 0
+                    };
+                }
                 
-                // Load analysis report
-                const analysisResponse = await fetch('../../analysis/analysis_report.json');
-                const analysisData = await analysisResponse.json();
+                // Load analysis report - try multiple paths
+                let analysisData = null;
+                try {
+                    const analysisResponse = await fetch('../../analysis/analysis_report.json');
+                    if (!analysisResponse.ok) throw new Error('Analysis report not found');
+                    analysisData = await analysisResponse.json();
+                } catch (e) {
+                    console.warn('Could not load analysis_report.json:', e.message);
+                    // Provide default/empty data structure
+                    analysisData = {
+                        summary: { totalValue: 0, totalPnL: 0, totalPnLPct: 0, totalStocks: 0 },
+                        holdings: []
+                    };
+                }
 
                 updateStats(signalsData, analysisData);
                 updateSignals(signalsData);

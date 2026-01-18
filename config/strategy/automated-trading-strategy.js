@@ -75,22 +75,14 @@ function calculateRSI(prices) {
 }
 
 // Fetch historical data for RSI calculation
+// NOTE: This function requires instrument_token which needs to be mapped from symbol
+// For now, it's a placeholder - in production, maintain a symbol->token mapping
 async function getHistoricalData(client, symbol, days = 30) {
   try {
-    const toDate = new Date();
-    const fromDate = new Date();
-    fromDate.setDate(fromDate.getDate() - days);
-
-    const response = await client.get('/instruments/historical', {
-      params: {
-        instrument_token: symbol,
-        from: fromDate.toISOString().split('T')[0],
-        to: toDate.toISOString().split('T')[0],
-        interval: 'day'
-      }
-    });
-
-    return response.data.data || [];
+    // This would require fetching instrument master data first to get token
+    // For simplicity, this is not implemented in the demo
+    log(`Info: Historical data fetch not implemented for ${symbol} (requires instrument token)`);
+    return [];
   } catch (error) {
     log(`Warning: Could not fetch historical data for ${symbol}`);
     return [];
@@ -121,11 +113,14 @@ async function analyzeStock(client, symbol, currentHoldings, portfolioValue) {
       lastPrice
     ];
 
-    // Simple RSI approximation using day's OHLC
-    // For production, fetch historical data
+    // SIMPLIFIED RSI APPROXIMATION using day's OHLC
+    // NOTE: This is a simplified calculation for demonstration purposes
+    // For production use, fetch historical data and use proper RSI calculation
+    // with the calculateRSI() function defined above
     const dayChange = ((lastPrice - ohlc.open) / ohlc.open) * 100;
     
     // Calculate approximate RSI based on day performance
+    // This is a heuristic approximation, not true RSI
     let rsi = 50; // Neutral
     if (dayChange > 3) rsi = 65;
     else if (dayChange > 1) rsi = 55;
