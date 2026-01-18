@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kite Trading Dashboard - Investment Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .value {
+            color: #333;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .change {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-card .change.positive {
+            color: #10b981;
+        }
+
+        .stat-card .change.negative {
+            color: #ef4444;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        .signals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .signal-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f9fafb;
+            border-left: 4px solid;
+        }
+
+        .signal-item.buy {
+            border-left-color: #10b981;
+        }
+
+        .signal-item.sell {
+            border-left-color: #ef4444;
+        }
+
+        .signal-item .symbol {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .signal-item .price {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .signal-item .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .signal-item .badge.buy {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .signal-item .badge.sell {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .rsi-meter {
+            margin: 20px 0;
+        }
+
+        .rsi-bar {
+            height: 30px;
+            background: linear-gradient(to right, #10b981 0%, #fbbf24 50%, #ef4444 100%);
+            border-radius: 15px;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .rsi-indicator {
+            position: absolute;
+            top: -5px;
+            width: 4px;
+            height: 40px;
+            background: #1f2937;
+            border-radius: 2px;
+            transition: left 0.3s;
+        }
+
+        .rsi-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .holdings-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .holdings-table th {
+            text-align: left;
+            padding: 12px;
+            background: #f9fafb;
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .holdings-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #333;
+        }
+
+        .holdings-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .profit {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .loss {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .refresh-btn:active {
+            transform: scale(0.95);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .sector-chip {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            background: #e0e7ff;
+            color: #4338ca;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📈 Kite Trading Dashboard</h1>
+            <p class="subtitle">Real-time Investment Monitoring & Strategy Signals</p>
+            <button class="refresh-btn" onclick="loadData()" style="margin-top: 15px;">
+                🔄 Refresh Data
+            </button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">Portfolio Value</div>
+                <div class="value" id="portfolioValue">₹0</div>
+                <div class="change positive" id="portfolioChange">
+                    <span>↑</span>
+                    <span>+₹0 (0%)</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Available Cash</div>
+                <div class="value" id="availableCash">₹0</div>
+                <div class="change" style="color: #666;">
+                    <span>Ready to invest</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Today's P&L</div>
+                <div class="value" id="todayPnl">₹0</div>
+                <div class="change" id="todayPnlChange">
+                    <span>↑</span>
+                    <span>0%</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Active Signals</div>
+                <div class="value" id="activeSignals">0</div>
+                <div class="change" style="color: #666;">
+                    <span id="signalBreakdown">0 Buy | 0 Sell</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2>📊 Top Holdings Performance</h2>
+                <div id="holdingsContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading holdings data...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎯 Trading Signals</h2>
+                <div id="signalsContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Analyzing market...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📈 RSI Analysis Dashboard</h2>
+            <p style="color: #666; margin-bottom: 20px; font-size: 14px;">
+                RSI (Relative Strength Index) measures momentum: &lt;30 = Oversold (Buy), &gt;70 = Overbought (Sell)
+            </p>
+            <div id="rsiContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Calculating RSI indicators...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadData() {
+            try {
+                // Load strategy signals - try multiple paths
+                let signalsData = null;
+                try {
+                    const signalsResponse = await fetch('../strategy_signals.json');
+                    if (!signalsResponse.ok) throw new Error('Strategy signals not found');
+                    signalsData = await signalsResponse.json();
+                } catch (e) {
+                    console.warn('Could not load strategy_signals.json:', e.message);
+                    // Provide default/empty data structure
+                    signalsData = {
+                        signals: [],
+                        summary: { totalSignals: 0, buySignals: 0, sellSignals: 0 },
+                        portfolioValue: 0,
+                        availableCash: 0
+                    };
+                }
+                
+                // Load analysis report - try multiple paths
+                let analysisData = null;
+                try {
+                    const analysisResponse = await fetch('../../analysis/analysis_report.json');
+                    if (!analysisResponse.ok) throw new Error('Analysis report not found');
+                    analysisData = await analysisResponse.json();
+                } catch (e) {
+                    console.warn('Could not load analysis_report.json:', e.message);
+                    // Provide default/empty data structure
+                    analysisData = {
+                        summary: { totalValue: 0, totalPnL: 0, totalPnLPct: 0, totalStocks: 0 },
+                        holdings: []
+                    };
+                }
+
+                updateStats(signalsData, analysisData);
+                updateSignals(signalsData);
+                updateHoldings(analysisData);
+                updateRSI(signalsData);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError();
+            }
+        }
+
+        function updateStats(signals, analysis) {
+            // Portfolio value
+            document.getElementById('portfolioValue').textContent = 
+                `₹${analysis.summary.totalValue.toLocaleString('en-IN')}`;
+            
+            document.getElementById('portfolioChange').innerHTML = `
+                <span>${analysis.summary.totalPnL >= 0 ? '↑' : '↓'}</span>
+                <span>${analysis.summary.totalPnL >= 0 ? '+' : ''}₹${Math.abs(analysis.summary.totalPnL).toLocaleString('en-IN')} 
+                (${analysis.summary.totalPnLPct}%)</span>
+            `;
+            document.getElementById('portfolioChange').className = 
+                'change ' + (analysis.summary.totalPnL >= 0 ? 'positive' : 'negative');
+
+            // Available cash
+            document.getElementById('availableCash').textContent = 
+                `₹${signals.availableCash.toLocaleString('en-IN')}`;
+
+            // Today's P&L (simplified - using total P&L as proxy)
+            const todayPnl = analysis.summary.totalPnL;
+            document.getElementById('todayPnl').textContent = 
+                `₹${Math.abs(todayPnl).toLocaleString('en-IN')}`;
+            document.getElementById('todayPnlChange').innerHTML = `
+                <span>${todayPnl >= 0 ? '↑' : '↓'}</span>
+                <span>${analysis.summary.totalPnLPct}%</span>
+            `;
+            document.getElementById('todayPnlChange').className = 
+                'change ' + (todayPnl >= 0 ? 'positive' : 'negative');
+
+            // Active signals
+            document.getElementById('activeSignals').textContent = signals.summary.totalSignals;
+            document.getElementById('signalBreakdown').textContent = 
+                `${signals.summary.buySignals} Buy | ${signals.summary.sellSignals} Sell`;
+        }
+
+        function updateSignals(signals) {
+            const container = document.getElementById('signalsContainer');
+            
+            if (signals.signals.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>No active trading signals</p>
+                        <small style="color: #999;">Market conditions are neutral</small>
+                    </div>
+                `;
+                return;
+            }
+
+            const signalsHTML = signals.signals.map(signal => `
+                <div class="signal-item ${signal.signal.toLowerCase()}">
+                    <div>
+                        <div class="symbol">${signal.symbol}</div>
+                        <div class="price">₹${signal.lastPrice} | RSI: ${signal.rsi}</div>
+                        <div class="price" style="margin-top: 4px; font-size: 12px;">${signal.reason}</div>
+                    </div>
+                    <div>
+                        <span class="badge ${signal.signal.toLowerCase()}">${signal.signal}</span>
+                        <div style="text-align: right; margin-top: 5px; font-size: 12px; color: #666;">
+                            Qty: ${signal.suggestedQty}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `<div class="signals-list">${signalsHTML}</div>`;
+        }
+
+        function updateHoldings(analysis) {
+            const container = document.getElementById('holdingsContainer');
+            const topHoldings = analysis.holdings.slice(0, 10);
+
+            const tableHTML = `
+                <table class="holdings-table">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Sector</th>
+                            <th>Quantity</th>
+                            <th>Avg Price</th>
+                            <th>Current</th>
+                            <th>P&L</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${topHoldings.map(h => `
+                            <tr>
+                                <td><strong>${h.symbol}</strong></td>
+                                <td><span class="sector-chip">${h.sector}</span></td>
+                                <td>${h.quantity}</td>
+                                <td>₹${h.avgPrice}</td>
+                                <td>₹${h.lastPrice}</td>
+                                <td class="${h.pnlPct >= 0 ? 'profit' : 'loss'}">
+                                    ${h.pnlPct >= 0 ? '+' : ''}${h.pnlPct}%
+                                </td>
+                                <td>${h.score}/10</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
+        }
+
+        function updateRSI(signals) {
+            const container = document.getElementById('rsiContainer');
+            
+            if (signals.signals.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>No RSI data available</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const rsiHTML = signals.signals.map(signal => `
+                <div style="margin-bottom: 30px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <strong>${signal.symbol}</strong>
+                        <span style="color: ${signal.rsi < 30 ? '#10b981' : signal.rsi > 70 ? '#ef4444' : '#666'};">
+                            RSI: ${signal.rsi}
+                        </span>
+                    </div>
+                    <div class="rsi-bar">
+                        <div class="rsi-indicator" style="left: ${signal.rsi}%;"></div>
+                    </div>
+                    <div class="rsi-labels">
+                        <span>Oversold (30)</span>
+                        <span>Neutral (50)</span>
+                        <span>Overbought (70)</span>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = rsiHTML;
+        }
+
+        function showError() {
+            document.querySelectorAll('.loading').forEach(el => {
+                el.innerHTML = `
+                    <div class="empty-state">
+                        <p>⚠️ Error loading data</p>
+                        <small style="color: #999;">Make sure strategy and analysis scripts have been run</small>
+                        <br><br>
+                        <button class="refresh-btn" onclick="loadData()">Try Again</button>
+                    </div>
+                `;
+            });
+        }
+
+        // Auto-load data on page load
+        window.addEventListener('DOMContentLoaded', loadData);
+
+        // Auto-refresh every 5 minutes
+        setInterval(loadData, 5 * 60 * 1000);
+    </script>
+</body>
+</html>

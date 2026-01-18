@@ -7,7 +7,7 @@ This is a **VS Code extension** for Zerodha Kite trading API integration, built 
 ### Core Components
 - **`src/extension.ts`** - Entry point: registers VS Code commands, manages status bar, creates webview panels for profile/positions/holdings
 - **`src/kiteService.ts`** - API layer: axios-based service for Kite Connect API v3 (`https://api.kite.trade`)
-- **`config/`** - Standalone Node.js scripts for trading operations (buy/sell/analysis), designed for AI agent automation
+- **`config/`** - Standalone Node.js scripts for trading operations (buy/sell/analysis/strategy), designed for AI agent automation
 
 ### Data Flow
 1. User configures `kite.apiKey` + `kite.accessToken` in VS Code settings
@@ -57,6 +57,8 @@ Scripts in `config/` are standalone Node.js, not part of extension bundle:
 | Buy | `config/buy/buy-stocks.js` | `node config/buy/buy-stocks.js --symbol INFY --qty 10` |
 | Sell | `config/sell/sell-stocks.js` | `node config/sell/sell-stocks.js --symbol TCS --qty 5 --confirm` |
 | Analysis | `config/analysis/strategic-analysis.js` | Outputs to `analysis_report.json` |
+| **Automated Strategy** | `config/strategy/automated-trading-strategy.js` | RSI-based daily trading signals |
+| **Dashboard** | `config/strategy/webapp/dashboard.html` | Web-based investment monitoring |
 
 ## Configuration Settings
 
@@ -70,6 +72,44 @@ Settings stored in VS Code configuration (`kite.*` namespace):
 - **Kite Connect API v3**: https://kite.trade/docs/connect/v3/
 - Market hours: 9:15 AM - 3:30 PM IST for live orders
 - Access tokens expire daily - use `config/auth/auto-refresh-token.ps1` for refresh
+
+## Automated Trading Strategy
+
+New feature for daily profit generation using RSI-based technical analysis:
+
+### Strategy Overview
+- **Location**: `config/strategy/automated-trading-strategy.js`
+- **Purpose**: Generate automated buy/sell signals based on RSI indicators
+- **Safety**: Simulation mode by default, manual execution required
+
+### Key Features
+- RSI oversold/overbought detection (30/70 thresholds)
+- Automatic stop-loss (-3%) and profit targets (+2%)
+- Position sizing limits (5% max per stock)
+- Daily trade limits (10 trades/day max)
+- Investment caps (₹10,000 per trade)
+
+### Usage
+```bash
+# Generate signals (simulation mode)
+node config/strategy/automated-trading-strategy.js
+
+# View in dashboard
+open config/strategy/webapp/dashboard.html
+```
+
+### Output Files
+- `strategy_signals.json` - Trading signals with recommendations
+- `strategy.log` - Execution log with timestamps
+- Web dashboard - Real-time portfolio monitoring with RSI indicators
+
+### Integration with Buy/Sell
+Strategy generates signals that feed into existing buy/sell scripts:
+```bash
+# After reviewing signals, execute:
+node config/buy/buy-stocks.js --symbol <SYMBOL> --qty <QTY> --confirm
+node config/sell/sell-stocks.js --symbol <SYMBOL> --qty <QTY> --confirm
+```
 
 ## Testing
 

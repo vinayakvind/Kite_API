@@ -10,6 +10,9 @@ A Visual Studio Code extension for integrating with **Zerodha's Kite trading API
 - **Holdings**: View your investment holdings portfolio
 - **Status Bar**: Real-time connection status in VS Code status bar
 - **Secure Configuration**: Store API credentials securely in VS Code settings
+- **Automated Trading Strategy**: RSI-based daily trading signals (NEW)
+- **Investment Dashboard**: Web-based portfolio monitoring with real-time P&L (NEW)
+- **Daily Profit Tracking**: Automated daily profit/loss tracking with statistics (NEW)
 
 ## Prerequisites
 
@@ -69,6 +72,43 @@ Access all commands through the Command Palette (`Ctrl+Shift+P`):
 - **Kite: Get Profile** - View your trading profile
 - **Kite: Get Positions** - View current trading positions
 - **Kite: Get Holdings** - View your investment holdings
+
+### Automated Trading (NEW)
+
+Beyond VS Code commands, this extension includes standalone scripts for automated trading:
+
+#### Generate Trading Signals
+```bash
+node config/strategy/automated-trading-strategy.js
+```
+
+Features:
+- RSI-based technical analysis (oversold/overbought detection)
+- Automatic stop-loss (-3%) and profit targets (+2%)
+- Position sizing limits (5% max per stock)
+- Daily trade limits and investment caps
+- Generates signals in `config/strategy/strategy_signals.json`
+
+#### Track Daily Profit
+```bash
+node config/strategy/daily-profit-tracker.js
+```
+
+Features:
+- Daily P&L calculation (delivery + intraday)
+- Win/loss rate tracking
+- Cumulative profit statistics
+- Historical performance data
+
+#### Investment Dashboard
+Open `config/strategy/webapp/dashboard.html` in your browser for:
+- Real-time portfolio value and P&L
+- Active trading signals with RSI indicators
+- Top holdings performance table
+- Visual RSI charts (oversold/overbought zones)
+- Auto-refresh every 5 minutes
+
+See [`config/strategy/README.md`](config/strategy/README.md) for complete documentation.
 
 ### Status Bar
 
@@ -131,11 +171,14 @@ This extension uses the [Kite Connect API v3](https://kite.trade/docs/connect/v3
 
 - [ ] OAuth flow for automatic token generation
 - [ ] WebSocket integration for real-time market data
-- [ ] Order placement interface
-- [ ] Market quotes and watchlist
+- [ ] Enhanced order placement interface in VS Code
+- [ ] Market quotes and watchlist management
 - [ ] Historical data visualization
 - [ ] GTT (Good Till Triggered) orders management
 - [ ] Alerts and notifications
+- [x] Automated trading strategy with RSI analysis
+- [x] Web-based investment dashboard
+- [x] Daily profit tracking and statistics
 
 ## Resources
 
