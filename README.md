@@ -10,6 +10,10 @@ A Visual Studio Code extension for integrating with **Zerodha's Kite trading API
 - **Holdings**: View your investment holdings portfolio
 - **Status Bar**: Real-time connection status in VS Code status bar
 - **Secure Configuration**: Store API credentials securely in VS Code settings
+- **📊 Stock Trading Automation**: Daily buy/sell recommendations with automated execution
+- **📈 Performance Tracking**: Historical portfolio tracking with interactive charts
+- **🤖 Cloud Agent Support**: Automated trading via scheduled cloud tasks
+- **📱 Web Dashboards**: Mobile-friendly dashboards for portfolio monitoring
 
 ## Prerequisites
 
@@ -70,6 +74,26 @@ Access all commands through the Command Palette (`Ctrl+Shift+P`):
 - **Kite: Get Positions** - View current trading positions
 - **Kite: Get Holdings** - View your investment holdings
 
+### Stock Trading Automation
+
+Access automated trading features via config scripts:
+
+```bash
+# Generate daily recommendations
+node config/recommendations/generate-recommendations.js
+
+# Run full daily automation
+node config/automation/daily-runner.js
+
+# Track historical performance
+node config/automation/track-daily-performance.js
+
+# View web dashboards
+# Open config/recommendations/webapp/dashboard.html in browser
+```
+
+See **[Stock Trading Strategy Guide](STOCK_TRADING_STRATEGY.md)** for complete documentation.
+
 ### Status Bar
 
 The extension adds a status bar item showing connection status:
@@ -129,13 +153,19 @@ This extension uses the [Kite Connect API v3](https://kite.trade/docs/connect/v3
 
 ## Future Enhancements
 
+- [x] Daily automated recommendations
+- [x] Historical performance tracking
+- [x] Web dashboard for portfolio monitoring
+- [x] Cloud agent automation support
 - [ ] OAuth flow for automatic token generation
 - [ ] WebSocket integration for real-time market data
-- [ ] Order placement interface
+- [ ] Order placement interface in VS Code
 - [ ] Market quotes and watchlist
 - [ ] Historical data visualization
 - [ ] GTT (Good Till Triggered) orders management
 - [ ] Alerts and notifications
+- [ ] ML-based recommendation engine
+- [ ] Options trading strategies
 
 ## Resources
 

@@ -1,0 +1,129 @@
+# GitHub Actions Workflow for Daily Stock Trading Automation
+#
+# This workflow runs daily after market close to:
+# 1. Generate portfolio recommendations
+# 2. Perform strategic analysis
+# 3. Track historical performance
+# 4. Upload results as artifacts
+#
+# Setup Instructions:
+# 1. Copy this file to .github/workflows/daily-trading.yml
+# 2. Add repository secrets (Settings > Secrets and variables > Actions):
+#    - KITE_API_KEY: Your Kite Connect API key
+#    - KITE_ACCESS_TOKEN: Your access token (update daily or use refresh script)
+# 3. Commit and push
+# 4. Workflow will run automatically or can be triggered manually
+
+name: Daily Stock Trading Automation
+
+on:
+  # Run daily at 3:45 PM IST (10:15 AM UTC) on weekdays
+  schedule:
+    - cron: '15 10 * * 1-5'
+  
+  # Allow manual trigger from Actions tab
+  workflow_dispatch:
+
+jobs:
+  trading-automation:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        run: npm install axios
+      
+      - name: 🔐 Create settings file
+        run: |
+          mkdir -p $HOME/.config/Code/User
+          cat > $HOME/.config/Code/User/settings.json << EOF
+          {
+            "kite.apiKey": "${{ secrets.KITE_API_KEY }}",
+            "kite.accessToken": "${{ secrets.KITE_ACCESS_TOKEN }}"
+          }
+          EOF
+        env:
+          APPDATA: $HOME/.config
+      
+      - name: 📊 Run daily automation
+        id: automation
+        run: |
+          export APPDATA=$HOME/.config
+          node config/automation/daily-runner.js
+        continue-on-error: true
+      
+      - name: 📈 Generate recommendations
+        if: steps.automation.outcome == 'failure'
+        run: |
+          export APPDATA=$HOME/.config
+          node config/recommendations/generate-recommendations.js
+        continue-on-error: true
+      
+      - name: 📁 Upload recommendations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trading-results-${{ github.run_number }}
+          path: |
+            config/recommendations/recommendations.json
+            config/recommendations/summary.txt
+            config/recommendations/webapp/data.js
+            config/analysis/analysis_summary.txt
+            config/automation/history/*.json
+            config/automation/performance_history.json
+          retention-days: 90
+      
+      - name: 📝 Create summary
+        if: always()
+        run: |
+          echo "## 📊 Daily Trading Automation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Run Time:** $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f config/recommendations/summary.txt ]; then
+            echo "### Recommendations" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            head -30 config/recommendations/summary.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📥 **Download full results from artifacts above**" >> $GITHUB_STEP_SUMMARY
+      
+      - name: 🚨 Check for urgent actions
+        if: success()
+        run: |
+          if [ -f config/recommendations/recommendations.json ]; then
+            node -e "
+              const fs = require('fs');
+              const data = JSON.parse(fs.readFileSync('config/recommendations/recommendations.json', 'utf8'));
+              const urgent = data.recommendations.filter(r => r.action === 'SELL' && r.priority === 1);
+              if (urgent.length > 0) {
+                console.log('🚨 URGENT ACTIONS REQUIRED:');
+                urgent.forEach(s => {
+                  console.log(\`🔴 SELL \${s.symbol}: \${s.quantity} shares @ ₹\${s.lastPrice}\`);
+                  console.log(\`   Reason: \${s.reason}\`);
+                  console.log(\`   P&L: ₹\${s.pnl} (\${s.pnlPercent}%)\`);
+                });
+                process.exit(1);  // Fail workflow to highlight urgent actions
+              }
+            "
+          fi
+        continue-on-error: true
+
+# Notes:
+# - This workflow does NOT execute real orders (safe mode only)
+# - To enable auto-execute, add --auto-execute flag to daily-runner.js call
+# - Access tokens expire daily - consider automating token refresh
+# - Artifacts are kept for 90 days - download important results
+# - Check Actions tab for workflow results and logs
+# - Failed workflows indicate urgent actions needed
