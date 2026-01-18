@@ -1,0 +1,98 @@
+{
+  "name": "kite-trading-api",
+  "displayName": "Kite Trading API",
+  "description": "VS Code extension for Zerodha Kite trading API integration",
+  "version": "0.0.1",
+  "publisher": "zerodha",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "kite.connect",
+        "title": "Kite: Connect to API"
+      },
+      {
+        "command": "kite.disconnect",
+        "title": "Kite: Disconnect"
+      },
+      {
+        "command": "kite.getProfile",
+        "title": "Kite: Get Profile"
+      },
+      {
+        "command": "kite.getPositions",
+        "title": "Kite: Get Positions"
+      },
+      {
+        "command": "kite.getHoldings",
+        "title": "Kite: Get Holdings"
+      },
+      {
+        "command": "kite.generateLoginUrl",
+        "title": "Kite: Generate Login URL"
+      },
+      {
+        "command": "kite.setAccessToken",
+        "title": "Kite: Set Access Token"
+      }
+    ],
+    "configuration": {
+      "title": "Kite Trading API",
+      "properties": {
+        "kite.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Your Kite API Key from https://developers.kite.trade"
+        },
+        "kite.apiSecret": {
+          "type": "string",
+          "default": "",
+          "description": "Your Kite API Secret"
+        },
+        "kite.accessToken": {
+          "type": "string",
+          "default": "",
+          "description": "Your Kite Access Token (generated after login)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.108.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "typescript-eslint": "^8.52.0",
+    "eslint": "^9.39.2",
+    "esbuild": "^0.27.2",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.9.3",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}

@@ -1,0 +1,50 @@
+Strategic Portfolio Analysis - 18/1/2026, 1:33:45 am
+============================================================
+
+📊 PORTFOLIO SUMMARY
+   Total Invested: ₹7,33,026.92
+   Current Value:  ₹6,17,258.24
+   Total P&L:      ₹-1,15,768.68 (-15.79%)
+   Positions:      74
+
+📈 SECTOR ALLOCATION
+   Other: 22.13% (24 stocks)
+   Silver ETF: 13.09% (1 stocks)
+   IT: 11.43% (7 stocks)
+   Auto: 10.88% (6 stocks)
+   FMCG: 9.1% (5 stocks)
+   Banking: 7.93% (3 stocks)
+   Infra: 6.15% (6 stocks)
+   Oil & Gas: 4.47% (5 stocks)
+   Pharma: 3.98% (4 stocks)
+   Sovereign Gold: 2.84% (1 stocks)
+   Electronics: 2.59% (2 stocks)
+   Power: 2.34% (5 stocks)
+   Paints: 2.05% (2 stocks)
+   Index ETF: 0.75% (1 stocks)
+   Bond ETF: 0.25% (1 stocks)
+   Gold ETF: 0.02% (1 stocks)
+
+🔴 EXIT RECOMMENDATIONS (4)
+   ITCHOTELS: P&L -65.4% | Cut losses, exit position
+   MICEL: P&L -55.05% | Cut losses, exit position
+   PRINCEPIPE: P&L -50.08% | Cut losses, exit position
+   GENSOL-BZ: P&L -97.78% | Cut losses, exit position
+
+🟡 REDUCE RECOMMENDATIONS (1)
+   SILVERBEES: Weight 13.09%, P&L 2.44% | Reduce concentration to 10% max
+
+🟢 ADD RECOMMENDATIONS (1)
+   TMCV: Weight 0.07%, Score 6/10 | Good performer, consider adding
+
+📋 TOP 10 BY SCORE
+   6/10 ABSLAMC (Other): 1.62% weight, -5.29% P&L
+   6/10 INDIGOPNTS (Paints): 1.6% weight, -13.94% P&L
+   6/10 INFY (IT): 2.74% weight, 1.51% P&L
+   6/10 KSB (Other): 1.33% weight, -16.84% P&L
+   6/10 SGBSEP31II (Sovereign Gold): 2.84% weight, 113.51% P&L
+   6/10 TMCV (Other): 0.07% weight, 46.29% P&L
+   6/10 WIPRO (IT): 0.26% weight, 1.91% P&L
+   6/10 YESBANK (Banking): 6.75% weight, -6.26% P&L
+   5/10 ASIANPAINT (Paints): 0.45% weight, -12.56% P&L
+   5/10 ASTRAL (Other): 0.95% weight, -11.73% P&L

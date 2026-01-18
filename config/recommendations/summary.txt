@@ -1,0 +1,22 @@
+Portfolio Recommendations - 18/1/2026, 1:33:33 am
+==================================================
+
+Total Invested: ₹7,33,026.92
+Current Value:  ₹6,17,258.24
+Total P&L:      ₹-1,15,642.25 (-15.79%)
+
+Actions: 4 BUY | 6 SELL | 64 HOLD
+
+🔴 SELL Recommendations:
+   GENSOL-BZ: 20 @ ₹22.29 | P&L: ₹-19615.2 (-97.78%) - Cut loss (>50% down)
+   SGBSEP31II: 1 @ ₹17501.71 | P&L: ₹9304.71 (113.51%) - Take profit (≥25% gain)
+   MICEL: 30 @ ₹38.51 | P&L: ₹-1415.1 (-55.05%) - Cut loss (>50% down)
+   PRINCEPIPE: 2 @ ₹242.7 | P&L: ₹-486.9 (-50.08%) - Cut loss (>50% down)
+   ITCHOTELS: 1 @ ₹187 | P&L: ₹-353.4 (-65.4%) - Cut loss (>50% down)
+   TMCV: 1 @ ₹438.5 | P&L: ₹138.74 (46.29%) - Take profit (≥25% gain)
+
+🟢 BUY Recommendations:
+   KFINTECH: Add more @ ₹1070.25 | Current P&L: ₹-8452.1 (-30.49%) - Dip recovery opportunity
+   BSOFT: Add more @ ₹433.1 | Current P&L: ₹-2173.8 (-31.33%) - Dip recovery opportunity
+   TMPV: Add more @ ₹353.6 | Current P&L: ₹-308.94 (-46.63%) - Dip recovery opportunity
+   GOKEX: Add more @ ₹604.75 | Current P&L: ₹-198 (-24.67%) - Dip recovery opportunity

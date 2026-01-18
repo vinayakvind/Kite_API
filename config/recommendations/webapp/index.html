@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Recommendations</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --green: #3fb950;
+      --red: #f85149;
+      --yellow: #d29922;
+      --blue: #58a6ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container { max-width: 1400px; margin: 0 auto; }
+    h1 { margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    h1 span { font-size: 0.5em; color: var(--text-muted); font-weight: normal; }
+    
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .card-label { color: var(--text-muted); font-size: 0.85em; margin-bottom: 4px; }
+    .card-value { font-size: 1.5em; font-weight: 600; }
+    .card-value.green { color: var(--green); }
+    .card-value.red { color: var(--red); }
+    
+    .filters {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { border-color: var(--blue); }
+    .filter-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: #21262d;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+    }
+    th:hover { background: #30363d; }
+    tr:hover { background: #21262d; }
+    
+    .badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8em;
+      font-weight: 600;
+    }
+    .badge.sell { background: rgba(248, 81, 73, 0.2); color: var(--red); }
+    .badge.buy { background: rgba(63, 185, 80, 0.2); color: var(--green); }
+    .badge.hold { background: rgba(210, 153, 34, 0.2); color: var(--yellow); }
+    
+    .pnl-positive { color: var(--green); }
+    .pnl-negative { color: var(--red); }
+    
+    .reason { color: var(--text-muted); font-size: 0.85em; }
+    
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85em;
+      margin-right: 4px;
+    }
+    .action-btn.sell-btn { background: var(--red); color: #fff; }
+    .action-btn.buy-btn { background: var(--green); color: #fff; }
+    
+    .no-data {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+    
+    @media (max-width: 768px) {
+      table { font-size: 0.85em; }
+      th, td { padding: 8px; }
+      .hide-mobile { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Portfolio Recommendations <span id="timestamp"></span></h1>
+    
+    <div class="summary-cards">
+      <div class="card">
+        <div class="card-label">Total Invested</div>
+        <div class="card-value" id="totalInvested">₹0</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Current Value</div>
+        <div class="card-value" id="totalCurrent">₹0</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Total P&L</div>
+        <div class="card-value" id="totalPnL">₹0</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Stocks</div>
+        <div class="card-value" id="stockCount">0</div>
+      </div>
+    </div>
+    
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="SELL">🔴 Sell (<span id="sellCount">0</span>)</button>
+      <button class="filter-btn" data-filter="BUY">🟢 Buy (<span id="buyCount">0</span>)</button>
+      <button class="filter-btn" data-filter="HOLD">🟡 Hold (<span id="holdCount">0</span>)</button>
+    </div>
+    
+    <table id="stockTable">
+      <thead>
+        <tr>
+          <th data-sort="symbol">Symbol</th>
+          <th data-sort="quantity" class="hide-mobile">Qty</th>
+          <th data-sort="avgPrice" class="hide-mobile">Avg Price</th>
+          <th data-sort="lastPrice">Last Price</th>
+          <th data-sort="pnl">P&L</th>
+          <th data-sort="pnlPercent">P&L %</th>
+          <th data-sort="action">Action</th>
+          <th class="hide-mobile">Reason</th>
+        </tr>
+      </thead>
+      <tbody id="stockTableBody">
+        <tr><td colspan="8" class="no-data">Loading data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <script src="data.js"></script>
+  <script>
+    let data = window.portfolioData || null;
+    let currentFilter = 'all';
+    let sortColumn = 'priority';
+    let sortAsc = true;
+    
+    function formatCurrency(n) {
+      return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+    }
+    
+    function render() {
+      if (!data) {
+        document.getElementById('stockTableBody').innerHTML = '<tr><td colspan="8" class="no-data">No data. Run generate-recommendations.js first.</td></tr>';
+        return;
+      }
+      
+      // Update summary
+      document.getElementById('timestamp').textContent = new Date(data.generatedAt).toLocaleString();
+      document.getElementById('totalInvested').textContent = formatCurrency(data.totalInvested);
+      document.getElementById('totalCurrent').textContent = formatCurrency(data.totalCurrent);
+      const pnlEl = document.getElementById('totalPnL');
+      pnlEl.textContent = `${formatCurrency(data.totalPnL)} (${data.totalPnLPercent}%)`;
+      pnlEl.className = 'card-value ' + (data.totalPnL >= 0 ? 'green' : 'red');
+      document.getElementById('stockCount').textContent = data.totalStocks;
+      document.getElementById('sellCount').textContent = data.sellCount;
+      document.getElementById('buyCount').textContent = data.buyCount;
+      document.getElementById('holdCount').textContent = data.holdCount;
+      
+      // Filter and sort
+      let items = [...data.recommendations];
+      if (currentFilter !== 'all') {
+        items = items.filter(r => r.action === currentFilter);
+      }
+      items.sort((a, b) => {
+        let av = a[sortColumn], bv = b[sortColumn];
+        if (typeof av === 'string') av = av.toLowerCase();
+        if (typeof bv === 'string') bv = bv.toLowerCase();
+        if (av < bv) return sortAsc ? -1 : 1;
+        if (av > bv) return sortAsc ? 1 : -1;
+        return 0;
+      });
+      
+      // Render table
+      const tbody = document.getElementById('stockTableBody');
+      if (items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="no-data">No stocks match the filter.</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = items.map(r => `
+        <tr>
+          <td><strong>${r.symbol}</strong></td>
+          <td class="hide-mobile">${r.quantity}</td>
+          <td class="hide-mobile">${formatCurrency(r.avgPrice)}</td>
+          <td>${formatCurrency(r.lastPrice)}</td>
+          <td class="${r.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${formatCurrency(r.pnl)}</td>
+          <td class="${r.pnlPercent >= 0 ? 'pnl-positive' : 'pnl-negative'}">${r.pnlPercent}%</td>
+          <td><span class="badge ${r.action.toLowerCase()}">${r.action}</span></td>
+          <td class="reason hide-mobile">${r.reason}</td>
+        </tr>
+      `).join('');
+    }
+    
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        render();
+      });
+    });
+    
+    // Sortable headers
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.sort;
+        if (sortColumn === col) {
+          sortAsc = !sortAsc;
+        } else {
+          sortColumn = col;
+          sortAsc = true;
+        }
+        render();
+      });
+    });
+    
+    render();
+  </script>
+</body>
+</html>
