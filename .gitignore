@@ -3,3 +3,11 @@ dist
 node_modules
 .vscode-test/
 *.vsix
+
+# Automation history files (optional - keep local history but don't commit)
+config/automation/history/
+config/automation/performance_history.json
+
+# Temporary data files
+*.tmp
+*.log
